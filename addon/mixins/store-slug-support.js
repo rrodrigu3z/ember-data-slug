@@ -1,18 +1,15 @@
-import Map from '@ember/map';
-import MapWithDefault from '@ember/map/with-default';
 import Mixin from '@ember/object/mixin';
 import { get } from '@ember/object';
 
 export default Mixin.create({
 
+  getMapValue(map, key) {
+    return map.get(key) || new Map();
+  },
+
   init() {
     this._super(...arguments);
-
-    this._typeSlugCache = MapWithDefault.create({
-      defaultValue: function() {
-        return Map.create();
-      }
-    });
+    this._typeSlugCache = new Map();
   },
 
   willDestroy() {
@@ -23,7 +20,7 @@ export default Mixin.create({
   },
 
   findRecord(modelName, idOrSlug, options) {
-    const slugCache = this._typeSlugCache.get(modelName);
+    const slugCache = this.getMapValue(this._typeSlugCache, modelName);
 
     let coercedIdOrSlug = `${idOrSlug}`;
 
